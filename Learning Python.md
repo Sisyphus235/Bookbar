@@ -425,6 +425,7 @@ print(a)
 >>> [2]
 ```
 * function
+
 ![](http://p27x0f47q.bkt.clouddn.com/python_function.jpeg)
 函数传参时要遵循的规则：1.首先是按位置检索的参数positional argument，然后是按名字检索的参数keyword argument，再者是*iterable，最后是**dict
 *可以用来pack和unpack
@@ -509,6 +510,7 @@ exercises
 mutable variables的赋值通常是通过class进行的，如果不使用class，往往要依靠global variables。
 ![](http://p27x0f47q.bkt.clouddn.com/20181002215924.png)
 * recursion
+
 python的recursion限制是1000层
 ```python
 >>> import sys
@@ -521,6 +523,7 @@ sys.setrecursionlimit(2000)
 ```
 recursion很强大，但一定要完全理解的情况下使用，有些情况会误触发recursion，要警惕，传输class中的\_\_setattr\_\_, \_\_getattribute\_\_, \_\_repr\_\_。
 * attributes and annotations
+
 python function是objects，能够非常灵活的调用。
 ```python
 def echo(m):
@@ -562,3 +565,117 @@ def func(a: 'spam', b: (1, 10), c: float) -> int:
 {'a': 'spam', 'b': (1, 10), 'c': <class 'float'>, 'return': <class 'int'>}
 ```
 * lambda expression
+
+
+从Lisp语言的symbolic logic演变而来，在python中是anonymous function。
+```python
+lambda arg1, arg2 ... : expression using arguments
+```
+lambda和def最大的区别在于lambda是expression，而def是statement，所以lambda可以在很多def无法使用的地方出现。因此，def用name来做reference，lambda可以选择是否使用name做reference。lambda的body是single expression，def是a block of statments。
+```python
+f = lambda x, y, z: x + y + z
+f(2, 3, 4)
+
+# 上面的lambda等价于下面的def
+def func(x, y, z):
+    return x + y + z
+func(2, 3, 4)
+```
+def和lambda的嵌套
+```python
+>>> def knights():
+        titile = 'Sir'
+        action = (lambda x: title + ' ' + x)
+        return action
+>>> act = knights()
+>>> msg = act('robin')
+>>> msg
+'Sir robin'
+```
+lambda的嵌套（nesting）
+```python
+>>> action = (lambda x: (lambda y: x + y))
+>>> act = action(99)
+>>> act(3)
+102
+```
+建议妥善使用lambda expression，因为它容易引起代码不可读的问题。
+* Functional programming tools
+
+
+**map function applies a passed-in function to each item in an iterable object and returns a list containing all the function call resutls.**
+例如：
+```python
+>>> def inc(x):
+        return x + 10
+>>> counters = [1, 2, 3, 4]
+>>> list(map(inc, counters))
+[11, 12, 13, 14]
+```
+map call类似于list comprehension expressions
+```python
+>>> list(map(inc, [1, 2, 3, 4]))
+[11, 12, 13, 14]
+>>> [inc(x) for x in [1, 2, 3, 4]]
+[11, 12, 13, 14]
+```
+**filter and reduce, select an iterable's items based on a test function and apply functions to item pair, respectively.**
+```python
+>>> list(filter((lambda x: x > 0), range(-5, 5))
+[1, 2, 3, 4]
+
+# 等价于
+>>> [x for x in range(-5, 5) if x > 0]
+[1, 2, 3, 4]
+
+# 等价于
+>>> res = []
+>>> for x in range(-5, 5):
+        if x > 0:
+            res.append(x)
+>>> res
+[1, 2, 3, 4]
+```
+reduce要复杂一些，它逐步迭代完成任务：
+```python
+>>> def myreduce(function, sequence):
+        tally = sequence[0]
+        for next in sequence[1: ]:
+            tally = function(tally, next)
+        return tally
+>>> myreduce((lambda x, y: x + y), [1, 2, 3, 4, 5])
+15
+>>> myreduce(lambda x, y: x * y), [1, 2, 3, 4,5])
+120
+```
+map passes each item to the function and collects all results, filter collects items for which the function returns a True value, and reduce computes a single value by applying the function to an accumulator and successive items. 
+Functions can send back results with return statements, by changing passed-in mutable arguments, and by setting global variables.
+
+## Chapter 20. Comprehensions and Generations
+* Comprehensions 
+ 
+list comprehensions apply an arbitrary expression to items in an iterable, rather than applying a function. 未来comprehension还会作用于sets, dictionaries, value generator expressions。
+ 基本语法
+ ```python
+ [ expression for target in iterable]
+ 可以扩展为
+ [expression for target1 in iterable1 if condition1
+             for target2 in iterable2 if condition2 ...
+             for targetN in iterableN if conditionN]
+ ```
+ ```python
+ >>> [x ** 2 for x in range(10) if x % 2 == 0]
+ [0, 4, 16, 36, 64]
+ 
+ # 等价于
+ >>> list(map((lambda x: x ** 2), filter((lambda x: x % 2 == 0), range(10))))
+  [0, 4, 16, 36, 64]
+ ```
+ 上面的例子对比发现，map, filter和reduce的功能虽然和list comprehension类似，但lsit comprehension处理复杂问题上的可读性更好。
+ 当list comprehension被nest的时候，换容易变得难以阅读，永远记得：
+ > simple is better than complex
+* Generations
+ 
+*Generator functions* are coded as normal **def** statements, but use **yield** statements to return results one at a time, suspending and resuming their state between each.
+*Generator expressions* are similar to the list comprehensions, but they return an object that produces results on demand instead of building a result list.
+
