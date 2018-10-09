@@ -678,4 +678,84 @@ list comprehensions apply an arbitrary expression to items in an iterable, rathe
  
 *Generator functions* are coded as normal **def** statements, but use **yield** statements to return results one at a time, suspending and resuming their state between each.
 *Generator expressions* are similar to the list comprehensions, but they return an object that produces results on demand instead of building a result list.
+iterator objects定义了__next__，或者返回next item，或者返回StopIteration。
+generator的最大价值在于节省memory use，同时在大型项目中有更好的performance。
+with a generator and no send, it's a one way street
+```
+==========       yield      ========
+Generator |   ------------> | User |
+==========                  ========
+```
+But with send, it becomes a two way street
+```
+==========       yield       ========
+Generator |   ------------>  | User |
+==========    <------------  ========
+                  send
+```
+```python
+>>> def f():
+...     while True:
+...         val = yield
+...         yield val*10
+... 
+>>> g = f()
+>>> g.next()
+>>> g.send(1)
+10
+>>> g.next()
+>>> g.send(10)
+100
+>>> g.next()
+>>> g.send(0.5)
+5.0
+>>> 
+```
+generator expressions example:
+```python
+>>> G = [x ** 2 for x in range(4)]
+>>> iter(G) is G
+False
+>>> next(G)
+0
+>>> next(G)
+1
+>>> next(G)
+4
+>>> next(G)
+9
+
+>>> G = (x ** 2 for x in range(4))
+>>> iter(G) is G
+True
+```
+A function def statement that contains a yield statment is turned into a generator function.
+A comprehension expressio enclosed in parenthesses is known as generator expression.
+python3.3 syntax更加concise和explicit
+```python
+>>> def both(N):
+        yield from range(N)
+        yield from (x ** 2 for x in range(N))
+>>> list(both(5))
+[0, 1, 2, 3, 4, 0, 1, 4, 9, 16]
+```
+four forms of comprehension in Python: list, generator, set, and dictionary
+List comprehensions in square brackets produce the result list all at once in mem- ory. When they are enclosed in parentheses instead, they are actually generator expressions—they have a similar meaning but do not produce the result list all at once. Instead, generator expressions return a generator object, which yields one item in the result at a time when used in an iteration context.
+
+## Chapter 21. The Benchmarking Interlude
+**list comprehensions** sometimes have a speed advantage over **for loop** statements, and that **map calls** can be faster or slower than both depending on call patterns.
+The **generator functions and expressions** of the preceding chapter tend to be slightly slower than **list comprehensions**, though they minimize memory space requirements and don’t delay result generation.
+* time module
+```python
+import time
+def timer(func, *args):
+    start = time.clock()
+    for i in range(1000):
+        func(*args)
+    return time.clock() - start
+    
+>>> timer(pow, 2, 1000)
+0.00296260674205626
+>>> timer(str.upper, 'spam') # Time to call 'spam'.upper() 1000 times 0.0005165746166859719
+```
 
