@@ -758,4 +758,54 @@ def timer(func, *args):
 0.00296260674205626
 >>> timer(str.upper, 'spam') # Time to call 'spam'.upper() 1000 times 0.0005165746166859719
 ```
+clock随着platform的不同变化很大，相对而言perf_counter和process_time更加可靠。
+**time.perf_counter()** returns the value in fractional seconds of a performance counter, defined as a clock with the highest available resolution to measure a short duration.
+**time.process_time()** returns the value in fractional seconds of the sum of the sys- tem and user CPU time of the current process. 
+* timing module alternatives
+
+```python
+"""
+total(spam, 1, 2, a=3, b=4, _reps=1000) calls and times spam(1, 2, a=3, b=4) _reps times, and returns total time for all runs, with final result.
+bestof(spam, 1, 2, a=3, b=4, _reps=5) runs best-of-N timer to attempt to filter out system load variation, and returns best time among _reps tests.
+bestoftotal(spam 1, 2, a=3, b=4, _rep1=5, reps=1000) runs best-of-totals test, which takes the best among _reps1 runs of (the total of _reps runs); 
+"""
+
+import time, sys
+timer = time.clock if sys.platform[:3] == 'win' else time.time
+
+def total(func, *pargs, **kargs): 
+    _reps = kargs.pop('_reps', 1000)   # Passed-in or default reps
+    repslist = list(range(_reps))   # Hoist range out for 2.X lists
+    start = timer()
+    for i in repslist:
+        ret = func(*pargs, **kargs)
+    elapsed = timer() - start 
+    return (elapsed, ret)
+    
+def bestof(func, *pargs, **kargs): 
+    _reps = kargs.pop('_reps', 5) 
+    best = 2 ** 32
+    for i in range(_reps):
+        start = timer()
+        ret = func(*pargs, **kargs) 
+        elapsed = timer() - start
+        if elapsed < best: 
+            best = elapsed
+    return (best, ret)
+    
+def bestoftotal(func, *pargs, **kargs):
+    _reps1 = kargs.pop('_reps1', 5)
+    return min(total(func, *pargs, **kargs) for i in range(_reps1))
+```
+第三方库检测运行速度，可以使用pystone.py
+list comprehensions are usually the quickest of the bunch; map beats list comprehensions in Python only when all tools must call functions; for loops tend to be slower than comprehensions; and generator functions and expressions are slower than comprehensions by a constant factor.
+
+# Part V.Modules and Packages
+
+## Chapter 22.Modules: The Big Picture
+module是python中highest level program organization unit，它会打包program code and data，提供封装的命名空间。
+modules主要功能：1.code reuse, 2.system namespace partitioning, 3.implementing shared services or data.
+Python structure: 包含python statements的text files，其中有一个top-level file，其余是supplemental files，通常也叫modules。top-level file包含main flow of control。
+A file imports a module to gain access to the tools it defines, which are known as its attributes—variable names attached to objects such as functions. 
+![](http://p27x0f47q.bkt.clouddn.com/20181010121747.png)
 
