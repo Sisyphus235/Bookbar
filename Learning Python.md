@@ -809,3 +809,8 @@ Python structure: 包含python statements的text files，其中有一个top-leve
 A file imports a module to gain access to the tools it defines, which are known as its attributes—variable names attached to objects such as functions. 
 ![](http://p27x0f47q.bkt.clouddn.com/20181010121747.png)
 
+modules是最高级的organizational structure，也是highest level of code reuse。
+import与C中的#include不同，不仅仅是一段代码的插入，更是runtime operations，包括：1.找到module's file; 2.compile it to byte code; 3.Run the module's code to build the objects it defines.
+一般运行时会去__pycache__路径下寻找对象，如果找到则不再编译，否则寻找到module后编译为二进制存储在.pyc中。寻找路径包括program home directory, PYTHONPATH directory, standard library dierectory, .pth files, site-packages home of third-party extensions.
+
+## Chapter 23.Module Coding Basics
