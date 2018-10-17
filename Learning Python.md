@@ -817,3 +817,23 @@ import与C中的#include不同，不仅仅是一段代码的插入，更是runti
 所有.py的文件都可以成为python module，top level指定的变量都是attributes。原则上python的文件不必须以.py结尾，但如果要被import，则必须以.py结尾。
 使用modules通常用from和import，from会fetch specific names在modules中，import将module看成一个整体引入。
 from statement has the potential to corrupt namespaces, the from statement has more serious issues when used in conjunc- tion with the reload call, as imported names might reference prior versions of objects.通常相比于使用from而言，import更加好。
+```python
+# A.py
+def func():
+    pass
+    
+# B.py
+def func():
+    pass
+    
+# Incorrect.py
+from A import func
+from B import func
+func()  # 这里调用的是B的func，namespace被干扰
+
+# Correct.py
+import A
+import B
+A.func()
+B.func()  # namespace不互相影响
+```
