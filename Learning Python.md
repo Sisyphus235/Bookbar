@@ -837,3 +837,28 @@ import B
 A.func()
 B.func()  # namespace不互相影响
 ```
+
+## Chapter 24.Module Packages
+import不仅引入了另一个路径的方法，而且为另一个路径创建了一个namespace。
+python package在3.3之后如果被其他文件import，在package中要有__init__.py文件。
+```shell
+dir0\
+    dir1\
+        __init__.py
+        dir2\
+            __init__.py
+            mod.py
+```
+```python
+import dir1.dir2.mod
+```
+\_\_init__.py的作用：1.declare a directory as python package; 2.generate a module namespace. 
+同时可以在\_\_init__.py中定义\_\_all__的lists来说明所有可以被from * statement导出的内容。
+
+PEP8 推荐使用绝对路径引用，因为这样可读性强更便携，而不是使用相对路径引用。
+> Relative imports for intra-package imports are highly discouraged. Always use the absolute package path for all imports. Even now that PEP 328 [7] is fully implemented in Python 2.5, its style of explicit relative imports is actively discouraged; absolute imports are more portable and usually more readable.
+
+module的搜索规则：
+* Basic modules with simple names (e.g., A) are located by searching each directory on the sys.path list, from left to right. 
+* Packages are simply directories of Python modules with a special __init__.py file, which enables A.B.C directory path syntax in imports. In an import of A.B.C, for example, the directory named A is located relative to the normal module import search of sys.path, B is another package subdirectory within A, and C is a module or other importable item within B.
+* Within a package’s files, normal import and from statements use the same sys.path search rule as imports elsewhere. 
