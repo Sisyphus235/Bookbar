@@ -862,3 +862,50 @@ module的搜索规则：
 * Basic modules with simple names (e.g., A) are located by searching each directory on the sys.path list, from left to right. 
 * Packages are simply directories of Python modules with a special __init__.py file, which enables A.B.C directory path syntax in imports. In an import of A.B.C, for example, the directory named A is located relative to the normal module import search of sys.path, B is another package subdirectory within A, and C is a module or other importable item within B.
 * Within a package’s files, normal import and from statements use the same sys.path search rule as imports elsewhere. 
+
+## Chapter 25. Advanced Module Topics
+module应该尽量解耦合，且有一般性，不能跨module修改参数、函数或者类。python中默认hide data，不让data跨模块传输。命名时用_开头来命名私有变量、函数或者类，减少from xx import *的破坏性。
+![](http://p27x0f47q.bkt.clouddn.com/20181019204716.png)
+__all__可以管理传输的变量
+```python
+#test.py
+a, _b, c, _d = 1, 2, 3, 4
+>>> from test import *
+>>> a, c
+(1, 3)
+>>> _b
+NameError: name '_b' is not defined
+>>> import unders
+>>> unders._b
+2
+
+#alls.py
+__all__ = ['a', '_c']
+a, b, _c, _d = 1, 2, 3, 4
+>>> from alls import *
+>>> a, _c
+(1, 3)
+>>> b
+NameError: name 'b' is not defined
+```
+\_\_future__可以用来import后续版本的工具
+```python
+from __future__ import print_function
+```
+除了from和import，还可以用as关键词来修改import变量的名字
+```python
+from a.test import b as c
+```
+如果不使用变量from, import, as，还可以用以下几种方式完成import
+```python
+# 1. __import__
+modname = 'string'
+string = __import__(modname)
+
+# 2. import importlib
+import importlib
+modname = 'string'
+string = importlib.import_module(modname)
+```
+\_\_name__能看到module的传入变量名，\_\_dict__能看到变量的字典。
+
