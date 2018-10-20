@@ -909,3 +909,40 @@ string = importlib.import_module(modname)
 ```
 \_\_name__能看到module的传入变量名，\_\_dict__能看到变量的字典。
 
+# Part VI. Classes and OOP
+
+## Chapter 26.OOP: The Big Picture
+class是python很重要的OOP工具，它能大幅减少redundancy，同时定制化解决个案。class是function packages组成的object，支持inheritance，适合有策略的programmer使用。
+OOP有两个核心概念：inheritance和composition，通过inheritance来减少代码量，通过composition来拆分事物，尽可能原子化的操作，通过组件来完成一个任务。
+与modules一样，class是python重要的program units，也会有独立的namespaces，他有三个独特的部分：
+* 1.multiple instances，可以不断做实例化，是一个实例工厂；
+* 2.cutomization via inheritance，可以在class外定义attributes；
+* 3.operator overloading，例如slice, concatenate, index等
+
+python class相比于其他语言做了极大的简化，几乎可以用一个功能来概括：object.attribute。他的search原则如下：
+> Find the first occurrence of attribute by looking in object, then in all classes above it, **from bottom to top** and **left to right**.
+
+![](http://p27x0f47q.bkt.clouddn.com/20181020134945.png)
+
+In OOP, instances are like records with “data,” and classes are the “programs” for processing those records.
+python支持多重继承(multiple inheritance)，继承顺序是自左向右检索父类，所以使用多重继承时父类的顺序很重要。
+一般原则是：class的attribute assignment尽可能发生在top level class statment blocks，而instance的attribue assignment尽可能发生在speical argument。
+instance创建时就必须assign的variable放在\_\_init__中：
+```python
+class C2: ...
+class C3: ...
+class C1(C2, C3):
+    def __init__(self, who):
+        self.name = who
+        
+# instead of 
+class C1(C2, C3):
+    def setname(self, who):
+        self.name = who
+```
+overloading operators可以重新定义，例如\_\_and__是对intersect或&的重载。
+class的OOP编程模式是一种强大的paradigm in realistic programming，他对已有程序进行customization，而不是change existing code，无论是change in place或者是start from scratch。
+> code shouldn’t care about what an object is, only about what it does. 
+
+
+
