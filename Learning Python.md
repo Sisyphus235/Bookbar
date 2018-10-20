@@ -944,5 +944,12 @@ overloading operators可以重新定义，例如\_\_and__是对intersect或&的�
 class的OOP编程模式是一种强大的paradigm in realistic programming，他对已有程序进行customization，而不是change existing code，无论是change in place或者是start from scratch。
 > code shouldn’t care about what an object is, only about what it does. 
 
+## Chapter 27.Class Coding Basics
+class有3个primary distinctions：
+* 1.独立的namespaces；
+* 2.对生成instance的支持，包括namespace的继承；
+* 3.支持operator overloading。
 
+Class objects come from statements, and instances come from calls.
+methods以\_\_X__呈现的是speical hooks，是事先定义好的，不可改变，例如之前出现的\_\_init__或者\_\_and__。
 
