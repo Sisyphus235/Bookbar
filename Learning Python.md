@@ -953,3 +953,34 @@ class有3个primary distinctions：
 Class objects come from statements, and instances come from calls.
 methods以\_\_X__呈现的是speical hooks，是事先定义好的，不可改变，例如之前出现的\_\_init__或者\_\_and__。
 
+## Chapter 28.A More Realistic Example
+OOP的核心概念包括继承inheritance，封装encapsulation，多态polymorphism
+```python
+class AttrDisplay:
+    def gatherAttrs(self):
+        attrs = []
+        for key in sorted(self.__dict__):
+            attrs.append('%s=%s' % (key, getattr(self, key)))
+        return ', '.join(attrs)
+    def __repr__(self):
+        return '[%s: %s]' % (self.__class__.__name__, self.gatherAttrs())
+        
+class Person(AttrDisplay):
+    def __init__(self, name, job=None, pay=0):
+        self.name = name
+        self.job = job
+        self.pay = pay
+    def lastName(self):
+        return self.name.split()[-1]
+    def giveRaise(self, percent):
+        self.pay = int(self.pay * (1 + percent))
+        
+class Manager(Person):
+    def __init__(self, name, pay):
+        Person.__init__(self, name, 'mgr', pay)
+    def giveRaise(self, percent, bonus=0.10):
+        Person.giveRaise(self, percent + bonus)
+```
+
+
+
